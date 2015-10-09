@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="Units">
-        <item>Metric</item>
-        <item>Imperial</item>
+        <item>@string/pref_units_metric</item>
+        <item>@string/pref_units_imperial</item>
+    </string-array>
+
+    <string-array name="IconPacks">
+        <item>@string/pref_IconPack_label_sunshine</item>
+        <item>@string/pref_IconPack_label_cute_dogs</item>
+    </string-array>
+
+    <string-array name="pref_IconPacks_values">
+        <item>@string/pref_IconPack_sunshine</item>
+        <item>@string/pref_IconPack_cute_dogs</item>
     </string-array>
 </resources>
