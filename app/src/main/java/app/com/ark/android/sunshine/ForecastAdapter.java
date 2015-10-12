@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 /**
  * {@link ForecastAdapter} exposes a list of weather forecasts
  * from a {@link android.database.Cursor} to a {@link android.widget.ListView}.
@@ -71,23 +73,27 @@ public class ForecastAdapter extends CursorAdapter {
         int viewType = getItemViewType(cursor.getPosition());
         // Read weather condition ID from cursor
         int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
-
+        int fallbackIconId;
         switch (viewType) {
             case VIEW_TYPE_TODAY: {
                 // Get weather icon
-                viewholder.iconView.setImageResource(
-                        Utility.getArtResourceForWeatherCondition(weatherId));
+                fallbackIconId = Utility.getArtResourceForWeatherCondition(
+                        weatherId);
                 break;
             }
-            case VIEW_TYPE_FUTURE_DAY: {
+            default: {
                 // Get weather icon
-                viewholder.iconView.setImageResource(
-                        Utility.getIconResourceForWeatherCondition(weatherId));
+                fallbackIconId = Utility.getIconResourceForWeatherCondition(
+                        weatherId);
                 break;
             }
         }
 
-
+        Glide.with(mContext)
+                .load(Utility.getArtUrlForWeatherCondition(mContext, weatherId))
+                .error(fallbackIconId)
+                .crossFade()
+                .into(viewholder.iconView);
 
 
         // TODO Read date from cursor
@@ -96,21 +102,22 @@ public class ForecastAdapter extends CursorAdapter {
 
 
         // TODO Read weather forecast from cursor
-        String forecast = cursor.getString(ForecastFragment.COL_WEATHER_DESC);
-        viewholder.descriptionView.setText(forecast);
-        viewholder.iconView.setContentDescription(forecast);
-        // Read user preference for metric or imperial temperature units
-        boolean isMetric = Utility.isMetric(context);
+        String description = Utility.getStringForWeatherCondition(context, weatherId);
+        //String forecast = cursor.getString(ForecastFragment.COL_WEATHER_DESC);
+        viewholder.descriptionView.setText(description);
+        viewholder.descriptionView.setContentDescription(context.getString(R.string.a11y_forecast, description));
 
         // Read high temperature from cursor
-        double high = cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
-        viewholder.highTempView.setText(Utility.formatTemperature(context,high));
-        viewholder.highTempView.setContentDescription("Maximum high temperature is " + Utility.formatTemperature(context, high));
+        String high = Utility.formatTemperature(
+                context, cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP));
+        viewholder.highTempView.setText(high);
+        viewholder.highTempView.setContentDescription(context.getString(R.string.a11y_high_temp, high));
 
         // TODO Read low temperature from cursor
-        double low = cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
-        viewholder.lowTempView.setText(Utility.formatTemperature(context, low));
-        viewholder.lowTempView.setContentDescription("Maximum low temperature is "+Utility.formatTemperature(context, low));
+        String low = Utility.formatTemperature(
+                context, cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP));
+        viewholder.lowTempView.setText(low);
+        viewholder.lowTempView.setContentDescription(context.getString(R.string.a11y_low_temp, low));
 
     }
 

@@ -26,4 +26,11 @@
         android:summaryOn="@string/pref_enable_notifications_true"
         android:defaultValue="@string/pref_enable_notifications_default" />
 
+    <ListPreference
+        android:key="@string/pref_IconPack_key"
+        android:title="@string/pref_IconPack_label"
+        android:entries="@array/IconPacks"
+        android:entryValues="@array/pref_IconPacks_values"
+        android:defaultValue="@string/pref_IconPack_sunshine"/>
+
 </PreferenceScreen>
