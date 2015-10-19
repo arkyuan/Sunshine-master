@@ -160,6 +160,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                         null
                 );
             }
+            getView().setVisibility(View.INVISIBLE);
             return null;
         }
 
@@ -167,6 +168,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             Log.v(LOG_TAG, "In onLoadFinished");
             if (data!=null&&data.moveToFirst()) {
+                getView().setVisibility(View.VISIBLE);
                 // Read weather condition ID from cursor
                 int weatherId = data.getInt(COL_WEATHER_CONDITION_ID);
                 //mIconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
