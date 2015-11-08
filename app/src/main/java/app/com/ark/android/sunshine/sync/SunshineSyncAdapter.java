@@ -46,18 +46,21 @@ import java.net.URL;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 
+import app.com.ark.android.sunshine.BuildConfig;
 import app.com.ark.android.sunshine.MainActivity;
 import app.com.ark.android.sunshine.R;
 import app.com.ark.android.sunshine.Utility;
 import app.com.ark.android.sunshine.data.WeatherContract;
+import app.com.ark.android.sunshine.muzei.WeatherMuzeiSource;
 
 public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
     public final String LOG_TAG = SunshineSyncAdapter.class.getSimpleName();
-    private final String Api_Key = "100febe92450468a8416bfe8f0608193";
+    //private final String Api_Key = "100febe92450468a8416bfe8f0608193";
     public static final int SYNC_INTERVAL = 60 * 180;
     private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
     private static final int WEATHER_NOTIFICATION_ID = 3004;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
+    public static final String ACTION_DATA_UPDATED = "app.com.ark.android.sunshine.ACTION_DATA_UPDATED";
 
     private static final String[] NOTIFY_WEATHER_PROJECTION = new String[] {
             WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
@@ -265,6 +268,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                         WeatherContract.WeatherEntry.COLUMN_DATE+ " <= ?",
                         new String[]{Long.toString(dayTime.setJulianDay(julianStartDay-1))});
 
+                updateWidgets();
+                updateMuzei();
                 notifyWeather();
             }
 
@@ -276,6 +281,23 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             setLocationStatus(getContext(), LOCATION_STATUS_SERVER_INVALID);
         }
         //return null;
+    }
+
+    private void updateMuzei() {
+        // Muzei is only compatible with Jelly Bean MR1+ devices, so there's no need to update the
+        // Muzei background on lower API level devices
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            Context context = getContext();
+            context.startService(new Intent(ACTION_DATA_UPDATED)
+                    .setClass(context, WeatherMuzeiSource.class));
+        }
+    }
+
+    private void updateWidgets() {
+        Context context = getContext();
+        //Setting the package ensures that only components in our app will receive the broadcast
+        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED).setPackage(context.getPackageName());
+        context.sendBroadcast(dataUpdatedIntent);
     }
 
     private void notifyWeather(){
@@ -448,7 +470,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                     .appendQueryParameter(FORMAT_PARAM, format)
                     .appendQueryParameter(UNITS_PARAM, units)
                     .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
-                    .appendQueryParameter(APIKEY_PARAM, Api_Key)
+                    .appendQueryParameter(APIKEY_PARAM, BuildConfig.OPEN_WEATHER_MAP_API_KEY)
                     .build();
 
             URL url = new URL(builtUri.toString());

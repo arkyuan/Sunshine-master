@@ -165,4 +165,13 @@
     <!-- Value in SharedPreferences for cute dogs art pack  option [CHAR LIMIT=NONE] -->
     <string name="pref_IconPack_cute_dogs" translatable="false">https://raw.githubusercontent.com/udacity/sunshine_icons/master/Archive/Mono/art_%s.png</string>
 
+    <!-- For Shared Element Transitions -->
+    <string name="detail_icon_transition_name" translatable="false">TN_DetailIcon</string>
+
+    <!-- Strings related to Widgets -->
+    <string name="title_widget_today">Sunshine Today</string>
+    <string name="title_widget_detail">Sunshine Details</string>
+
+    <!-- Strings related to Muzei Source -->
+    <string name="muzei_description">Today\'s weather</string>
 </resources>
